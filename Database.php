@@ -11,7 +11,7 @@
         public static $db;
 
         public function __construct(){
-            $this->pdo = new PDO("mysql:host=localhost;port=3306;dbname=u888620740_rank_crud", "black23", "Testpass123");
+            $this->pdo = new PDO("mysql:host=localhost;port=3306;dbname=u888620740_rank_crud", "u888620740_black23", "Testpass123");
             $this->pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
             // black23 Testpass123
