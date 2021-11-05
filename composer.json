@@ -1,0 +1,15 @@
+{
+    "name": "user/03_good",
+    "autoload": {
+        "psr-4": {
+            "app\\": "./"
+        }
+    },
+    "authors": [
+        {
+            "name": "devvspaces",
+            "email": "netrobeweb@gmail.com"
+        }
+    ],
+    "require": {}
+}
