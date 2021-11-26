@@ -18,13 +18,33 @@ $("document").ready(function() {
   }
 
   function init() {
-      document.addEventListener("touchstart", touchHandler, true);
-      document.addEventListener("touchmove", touchHandler, true);
-      document.addEventListener("touchend", touchHandler, true);
-      document.addEventListener("touchcancel", touchHandler, true);
+      let board = document.getElementById('board')
+      console.log(board)
+      board.addEventListener("touchstart", touchHandler, true);
+      board.addEventListener("touchmove", touchHandler, true);
+      board.addEventListener("touchend", touchHandler, true);
+      board.addEventListener("touchcancel", touchHandler, true);
+  }
+
+  function editBoard(){
+    let board = document.getElementById('board')
+    elClone = board.cloneNode(true);
+    board.parentNode.replaceChild(elClone, board);
   }
 
   init();
+
+  $("#toggleEdit").click(function(event){
+    if ($(this).hasClass('btn-outline-primary')){
+      $(this).removeClass('btn-outline-primary')
+      $(this).addClass('btn-success')
+      editBoard()
+    } else {
+      $(this).addClass('btn-outline-primary')
+      $(this).removeClass('btn-success')
+      location.reload()
+    }
+  })
 
   // Function to update rank card count and icon
   function updateRankCount(rankCard, count, action='UP'){
@@ -33,12 +53,35 @@ $("document").ready(function() {
     count = Math.abs(count);
 
     let rankCount = rankCard.querySelector('.rank-count');
+
+    let highestSpan = rankCard.querySelector('.highest');
+    let highestVal = parseInt(highestSpan.innerText);
+
+    let lowestSpan = rankCard.querySelector('.lowest');
+    let lowestVal = parseInt(lowestSpan.innerText);
+
     if (action=='UP'){
+      if (rankCount.classList.contains('moveup')){
+        let currentCount = rankCount.innerText;
+        count = parseInt(currentCount) + count;
+      }
       rankCount.innerHTML = "<span><i class='fas fa-arrow-up'></i></span><p>"+ count +"</p>"
       rankCount.className='rank-count moveup';
+
+      if (count > highestVal){
+        highestSpan.innerText = count
+      }
     } else if (action=='DOWN') {
+      if (rankCount.classList.contains('movedown')){
+        let currentCount = rankCount.innerText;
+        count = parseInt(currentCount) + count;
+      }
       rankCount.innerHTML = "<span><i class='fas fa-arrow-down'></i></span><p>"+ count +"</p>"
       rankCount.className='rank-count movedown';
+
+      if (count > lowestVal){
+        lowestSpan.innerText = count
+      }
     }
     
   }

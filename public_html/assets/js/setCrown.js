@@ -26,4 +26,23 @@ function setCrowns(){
 }
 
 setCrowns()
-  
+
+let parentBox = document.querySelectorAll('.rank-parent');
+function searchRankings(e){
+    let input_val = e.target.value
+    parentBox.forEach(i=>{
+        let text = i.querySelector('h4').innerText
+        if (text.indexOf(input_val) == -1){
+            i.style.display = 'none';
+        } else {
+            i.style.display = 'block';
+        }
+    })
+}
+
+
+let formSearch = document.querySelector('.form-search');
+if (formSearch != undefined){
+    let input = document.querySelector('.form-search input')
+    input.addEventListener('keyup', searchRankings)
+}

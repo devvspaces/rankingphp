@@ -12,8 +12,13 @@
 
     $router->get('/', [$product_controller, 'index']);
     $router->get('/ranks', [$product_controller, 'index']);
+    $router->get('/ranks/view', [$product_controller, 'viewDetail']);
+
     $router->get('/admin', [$product_controller, 'admin']);
     $router->get('/admin/ranks', [$product_controller, 'admin']);
+    $router->get('/admin/ranks/view', [$product_controller, 'viewDetailUpdate']);
+    $router->post('/admin/ranks/view', [$product_controller, 'viewDetailUpdate']);
+
     $router->get('/ranks/create', [$product_controller, 'create']);
     $router->post('/ranks/create', [$product_controller, 'create']);
     $router->get('/ranks/update', [$product_controller, 'update']);
@@ -24,5 +29,8 @@
     $router->get('/admin/login', [$product_controller, 'login']);
     $router->post('/admin/login', [$product_controller, 'login']);
     $router->get('/logout', [$product_controller, 'logout']);
+
+    $router->get('/site/update', [$product_controller, 'site_update']);
+    $router->post('/site/update', [$product_controller, 'site_update']);
 
     $router->resolve();

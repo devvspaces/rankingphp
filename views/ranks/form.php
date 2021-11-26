@@ -6,10 +6,10 @@
     </div>
 <?php endif; ?>
 
-<?php if ($rank['image']): ?>
+<?php if ($rank['imagePath']): ?>
     <div class="my-3">
         <p class="mb-1">Current image:</p>
-        <img src="/<?php echo $rank['image']; ?>" class="thumb-image" alt="">
+        <img src="/<?php echo $rank['imagePath']; ?>" class="thumb-image" alt="">
     </div>
 <?php endif; ?>
 

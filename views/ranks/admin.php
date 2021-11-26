@@ -1,16 +1,26 @@
 
 
         <div class="container">
-            <div class="d-flex align-items-center my-3">
+            <div class="d-flex align-items-center my-3 justify-content-between" style="flex-wrap: wrap;">
                 <h1>Admin Ranks List</h1>
-                <a href="/ranks/create" class="btn btn-sm btn-success ms-auto">Create New Rank</a>
-                <a href="#" class="btn btn-sm btn-primary ms-3" id="updateOrder">Update order</a>
-                <a href="/logout" class="btn btn-sm btn-outline-danger ms-3">Logout</a>
+
+                <div class="main_site_up">
+                    <a href="/ranks/create" class="btn btn-sm btn-success">Create New Rank</a>
+                    <a href="#" class="btn btn-sm btn-primary" id="updateOrder">Update order</a>
+                    <a href="/site/update" class="btn btn-sm btn-primary">Update Site</a>
+                    <a href="/logout" class="btn btn-sm btn-outline-danger">Logout</a>
+                    <a href="#" class="btn btn-sm btn-outline-primary" id="toggleEdit">Edit mode</a>
+                </div>
             </div>
         </div>
 
         <section>
             <div class="container">
+
+                <div class="form-search">
+                    <input type="text" class="form-control" placeholder="Search ranking ...">
+                    <button class="btn btn-sm btn-primary"><span><i class="fas fa-search"></i></span></button>
+                </div>
                 <div id="board">
                 
                 <?php foreach($ranks as $i=>$ranks): ?>
@@ -51,13 +61,18 @@
                                         
                                     <?php endif; ?>
                                 </div>
-                                <h4 class="mt-3 mb-2"><?php echo $ranks['name']; ?></h4>
+                                <h4 class="mt-3 mb-2 noselect"><a href="/admin/ranks/view?id=<?php echo $ranks['id']; ?>"><?php echo $ranks['name']; ?></a></h4>
+
+                                <div class="maxes">
+                                    <p>Highest: <span class="highest"><?php echo $ranks['highest']; ?></span></p>
+                                    <p>Lowest: <span class="lowest"><?php echo $ranks['lowest']; ?></span></p>
+                                </div>
 
                                 <a href="/ranks/update?id=<?php echo $ranks['id']; ?>" class="btn btn-sm btn-outline-primary">Edit</a>
 
                                 <form class="d-inline" action="/ranks/delete" method="post">
-                                <input type="hidden" name="id" value="<?php echo $ranks['id']; ?>">
-                                <button type="submit" class="btn btn-sm btn-outline-danger">Delete</button>
+                                    <input type="hidden" name="id" value="<?php echo $ranks['id']; ?>">
+                                    <button type="submit" class="btn btn-sm btn-outline-danger">Delete</button>
                                 </form>
 
                             </div>

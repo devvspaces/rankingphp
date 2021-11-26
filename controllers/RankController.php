@@ -5,8 +5,12 @@
     use app\models\Rank;
     use app\helpers\UtilHelper;
 
+    $configLoc = __DIR__ . '/../conf.ini';
+
     class RankController
     {
+
+        public static $configLoc = __DIR__ . '/../conf.ini';
 
         public function login(Router $router){
 
@@ -78,9 +82,15 @@
             $search = $_GET['search'] ?? '';
             $Ranks = $router->db->getRanks($search);
 
+            $conf = parse_ini_file(self::$configLoc, true);
+
+            // UtilHelper::dump($conf);
+
             $context = [
                 'ranks' => $Ranks,
                 'search' => $search,
+                'head' => $conf['site']['head'],
+                'version' => $conf['site']['version']
             ];
 
             $router->renderView('ranks/index', $context);
@@ -97,6 +107,52 @@
             // Redirect to logout
             header('Location: /logout');
             exit;
+        }
+
+        public function site_update(Router $router){
+            // Check if the user is logged in
+            self::checkLogin();
+
+            $conf = parse_ini_file(self::$configLoc, true);
+
+            $errors = [];
+            $siteData = [
+                'head' => $conf['site']['head'],
+                'version' => $conf['site']['version']
+            ];
+
+            // UtilHelper::dump($RankData);
+
+            if ($_SERVER["REQUEST_METHOD"] == 'POST'){
+    
+                $head = $_POST['head'];
+                $version = $_POST['version'];
+
+                if (!$head){
+                    $errors[] = 'Please provide site head name';
+                }
+
+                if (!$version){
+                    $errors[] = 'Please provide site version name';
+                }
+
+                if (empty($errors)){
+                    $siteData['head'] = $_POST['head'];
+                    $siteData['version'] = $_POST['version'];
+
+                    UtilHelper::write_php_ini($siteData, self::$configLoc);
+
+                    header('Location: /admin/ranks');
+                    exit;
+                }
+            }
+
+            $context = [
+                'siteData' => $siteData,
+                'errors' => $errors
+            ];
+
+            $router->renderView('ranks/site_update', $context);
         }
 
         public function admin(Router $router){
@@ -157,7 +213,7 @@
                 'position' => '',
                 'count' => '',
                 'movement' => '',
-                'image' => '',
+                'imagePath' => '',
             ];
 
             if ($_SERVER["REQUEST_METHOD"] == 'POST'){
@@ -167,6 +223,10 @@
                 $RankData['count'] = $_POST['count'] ?? 0;
                 $RankData['movement'] = $_POST['movement'] ?? false;
                 $RankData['imageFile'] = $_FILES["image"] ?? null;
+
+                UtilHelper::dump($RankData);
+
+                // exit;
 
                 $Rank = new Rank();
                 $Rank->load($RankData);
@@ -191,7 +251,7 @@
 
             if (!$id){
                 // Redirect to list page
-                header("location: /");
+                header("location: /admin");
                 exit;
             }
 
@@ -205,6 +265,7 @@
                 'count' => $Rank['count'],
                 'movement' => $Rank['movement'],
                 'imagePath' => $Rank['image'],
+                'detail' => $Rank['detail'],
             ];
 
             // UtilHelper::dump($RankData);
@@ -244,9 +305,88 @@
             }
 
             // Redirect to list page
-            header("Location: /");
+            header("Location: /admin");
+        }
 
-            // $router->renderView('Ranks/delete', $context);
+        public function viewDetail(Router $router){
+            $id = $_GET['id'] ?? null;
+
+            if (!$id){
+                // Redirect to list page
+                header("location: /admin");
+                exit;
+            }
+
+            $Rank = $router->db->getRankById($id);
+
+            $errors = [];
+            $RankData = [
+                'id' => $Rank['id'],
+                'name' => $Rank['name'],
+                'position' => $Rank['position'],
+                'count' => $Rank['count'],
+                'movement' => $Rank['movement'],
+                'imagePath' => $Rank['image'],
+                'detail' => $Rank['detail'],
+            ];
+
+            $context = [
+                'rank' => $RankData,
+                'errors' => $errors,
+                'view' => false,
+            ];
+
+            $router->renderView('ranks/view', $context);
+        }
+
+        public function viewDetailUpdate(Router $router){
+            $id = $_GET['id'] ?? null;
+
+            if (!$id){
+                // Redirect to list page
+                header("location: /admin");
+                exit;
+            }
+
+            $Rank = $router->db->getRankById($id);
+
+            $errors = [];
+            $RankData = [
+                'id' => $Rank['id'],
+                'name' => $Rank['name'],
+                'position' => $Rank['position'],
+                'count' => $Rank['count'],
+                'movement' => $Rank['movement'],
+                'imagePath' => $Rank['image'],
+                'detail' => $Rank['detail'],
+            ];
+
+            // UtilHelper::dump($RankData);
+
+            if ($_SERVER["REQUEST_METHOD"] == 'POST'){
+    
+                $RankData['detail'] = $_POST['detail'];
+
+                // UtilHelper::dump($RankData);
+                // exit;
+
+                $Rank = new Rank();
+                $Rank->load($RankData);
+                $errors = $Rank->save();
+
+                if (empty($errors)){
+                    header("Location: /admin/ranks/view?id=$id");
+                    exit;
+                }
+            }
+
+            $context = [
+                'rank' => $RankData,
+                'errors' => $errors,
+                'view' => true,
+            ];
+
+            $router->renderView('ranks/view', $context);
         }
     }
     
