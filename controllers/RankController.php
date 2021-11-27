@@ -185,6 +185,8 @@
                     'name' => $Rank['name'],
                     'position' => $obj->position,
                     'count' => $obj->count,
+                    'highest' => $obj->highest,
+                    'lowest' => $obj->lowest,
                     'movement' => $obj->movement,
                     'imagePath' => $Rank['image'],
                 ];
@@ -311,9 +313,15 @@
         public function viewDetail(Router $router){
             $id = $_GET['id'] ?? null;
 
+            // UtilHelper::dump($_GET);
+
+            // echo $id;
+
+            // exit;
+
             if (!$id){
                 // Redirect to list page
-                header("location: /admin");
+                header("location: /");
                 exit;
             }
 

@@ -1,0 +1,23 @@
+public function __construct(){
+            $this->pdo = new PDO("mysql:host=localhost;port=3306;dbname=u888620740_rank_crud", "u888620740_black23", "Testpass123");
+            $this->pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+
+            // black23 Testpass123
+
+            self::$db = $this;
+        }
+
+
+
+php_flag log_errors on
+php_value error_reporting 32767
+php_value error_log "error_log.txt"
+
+RewriteEngine On
+RewriteBase /
+
+#skip existing files or directories
+RewriteCond %{REQUEST_FILENAME} !-f 
+RewriteCond %{REQUEST_FILENAME} !-d
+#everything else goes to index.php
+RewriteRule ^ index.php?request=%{THE_REQUEST} [L]

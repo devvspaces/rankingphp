@@ -56,6 +56,11 @@
                                     </div>
                                     <h4 class="mt-3"><a href="/ranks/view?id=<?php echo $ranks['id']; ?>"><?php echo $ranks['name']; ?></a></h4>
 
+                                    <div class="maxes">
+                                        <p>Highest: <span class="highest"><?php echo $ranks['highest']; ?></span></p>
+                                        <p>Lowest: <span class="lowest"><?php echo $ranks['lowest']; ?></span></p>
+                                    </div>
+
                                 </div>
                             </div>
                         </div>

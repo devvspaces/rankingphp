@@ -19,7 +19,6 @@ $("document").ready(function() {
 
   function init() {
       let board = document.getElementById('board')
-      console.log(board)
       board.addEventListener("touchstart", touchHandler, true);
       board.addEventListener("touchmove", touchHandler, true);
       board.addEventListener("touchend", touchHandler, true);
@@ -54,11 +53,13 @@ $("document").ready(function() {
 
     let rankCount = rankCard.querySelector('.rank-count');
 
-    let highestSpan = rankCard.querySelector('.highest');
-    let highestVal = parseInt(highestSpan.innerText);
+    // let highestSpan = rankCard.querySelector('.highest');
+    // let highestVal = parseInt(highestSpan.innerText);
 
-    let lowestSpan = rankCard.querySelector('.lowest');
-    let lowestVal = parseInt(lowestSpan.innerText);
+    // let lowestSpan = rankCard.querySelector('.lowest');
+    // let lowestVal = parseInt(lowestSpan.innerText);
+
+    // console.log(rankCard.parentElement.getAttribute('num'))
 
     if (action=='UP'){
       if (rankCount.classList.contains('moveup')){
@@ -68,9 +69,9 @@ $("document").ready(function() {
       rankCount.innerHTML = "<span><i class='fas fa-arrow-up'></i></span><p>"+ count +"</p>"
       rankCount.className='rank-count moveup';
 
-      if (count > highestVal){
-        highestSpan.innerText = count
-      }
+      // if (count > highestVal){
+      //   highestSpan.innerText = count
+      // }
     } else if (action=='DOWN') {
       if (rankCount.classList.contains('movedown')){
         let currentCount = rankCount.innerText;
@@ -79,9 +80,9 @@ $("document").ready(function() {
       rankCount.innerHTML = "<span><i class='fas fa-arrow-down'></i></span><p>"+ count +"</p>"
       rankCount.className='rank-count movedown';
 
-      if (count > lowestVal){
-        lowestSpan.innerText = count
-      }
+      // if (count > lowestVal){
+      //   lowestSpan.innerText = count
+      // }
     }
     
   }
@@ -94,6 +95,8 @@ $("document").ready(function() {
     accept: '.rank-card',
     drop: function(event, ui) {
       let newRankCard = ui.draggable[0];
+      // console.log(ui.draggable)
+      // console.log(event)
       let oldParent = newRankCard.parentElement;
 
       let start = parseInt(oldParent.getAttribute('num'));
@@ -117,6 +120,8 @@ $("document").ready(function() {
 
           // Update el
           updateRankCount(rnkCard, 1, action='down')
+
+          updateHL(rnkCard, start)
         }
 
         // Update the movement count for the new rankcard
@@ -135,6 +140,8 @@ $("document").ready(function() {
 
           // Update el
           updateRankCount(rnkCard, 1)
+
+          updateHL(rnkCard, start)
         }
 
         // Update the movement count for the new rankcard
@@ -142,66 +149,100 @@ $("document").ready(function() {
       }
       $(this).append($(ui.draggable));
 
+      updateHL(newRankCard, end)
+
       setCrowns()
+
+      updateBoard()
     }
   });
 
 
-  if ($('#updateOrder').length){
-    $('#updateOrder').click(function(e){
-      let board = document.getElementById('board');
+  function updateHL(rankCard, position){
+      let highestSpan = rankCard.querySelector('.highest');
+      let highestVal = parseInt(highestSpan.innerText);
 
-      // Get the children
-      let children = Array.from(board.children);
+      let lowestSpan = rankCard.querySelector('.lowest');
+      let lowestVal = parseInt(lowestSpan.innerText);
 
-      let objArr = [];
-
-      for (let index = 0; index < children.length; index++) {
-        
-        let parent = children[index];
-        console.log(parent);
-
-        // position, count, id, movement
-        let position = parent.getAttribute('num');
-
-        let rankCount = parent.querySelector('.rank-count');
-
-        let count = rankCount.textContent;
-        let movement = 0;
-        if(rankCount.classList.contains('moveup')){
-          movement = 1;
-        }
-
-        let rankCard = parent.querySelector('.rank-card');
-        let id = rankCard.getAttribute('rankID');
-
-        let rankObj = {
-          'position': position,
-          'count': count,
-          'movement': movement,
-          'id': id,
-        }
-
-        objArr.push(rankObj);
+      if (highestVal == 0){
+        highestSpan.innerText = position
       }
 
-      // Converting obj arr into json
-      var jsonString = JSON.stringify(objArr);
+      if (lowestVal == 0){
+        lowestSpan.innerText = position
+      }
       
+      if (position < highestVal){
+        highestSpan.innerText = position
+      } else if(position > lowestVal){
+        lowestSpan.innerText = position
+      }
+  }
 
-      // Send with ajax
-      $.ajax({
-        type: "POST",
-        url: "/ranks/updateOrder/",
-        data: {'jsonString': jsonString},
-        cache: false,
-        success: function(data) {
-          alert('Ranks order successfully updated');
-        },
-        error: function(xhr, status, error) {
-          console.error(xhr);
-        }
-      });
+
+  function updateBoard(){
+    let board = document.getElementById('board');
+
+    // Get the children
+    let children = Array.from(board.children);
+
+    let objArr = [];
+
+    for (let index = 0; index < children.length; index++) {
+      
+      let parent = children[index];
+
+      // position, count, id, movement
+      let position = parent.getAttribute('num');
+
+      let rankCount = parent.querySelector('.rank-count');
+      let highest = parent.querySelector('.highest').innerText;
+      let lowest = parent.querySelector('.lowest').innerText;
+
+      let count = rankCount.textContent;
+      let movement = 0;
+      if(rankCount.classList.contains('moveup')){
+        movement = 1;
+      }
+
+      let rankCard = parent.querySelector('.rank-card');
+      let id = rankCard.getAttribute('rankID');
+
+      let rankObj = {
+        'position': position,
+        'count': count,
+        'movement': movement,
+        'id': id,
+        'highest': highest,
+        'lowest': lowest,
+      }
+
+      objArr.push(rankObj);
+    }
+
+    // Converting obj arr into json
+    var jsonString = JSON.stringify(objArr);
+    
+
+    // Send with ajax
+    $.ajax({
+      type: "POST",
+      url: "/ranks/updateOrder/",
+      data: {'jsonString': jsonString},
+      cache: false,
+      success: function(data) {
+        // alert('Ranks order successfully updated');
+      },
+      error: function(xhr, status, error) {
+        console.error(xhr);
+      }
+    });
+  }
+
+  if ($('#updateOrder').length){
+    $('#updateOrder').click(function(e){
+      updateBoard()
     })
   }
 });

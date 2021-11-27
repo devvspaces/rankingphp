@@ -66,13 +66,15 @@
         public function updateRank(Rank $Rank){
             // Make query
             $statement = $this->pdo->prepare("UPDATE rank SET name = :name, detail = :detail, position = :position,
-            movement = :movement, count = :count, image = :image WHERE id = :id");
+            movement = :movement, count = :count, image = :image, highest = :highest, lowest = :lowest WHERE id = :id");
 
             $statement->bindValue(':name', $Rank->name);
             $statement->bindValue(':detail', $Rank->detail);
             $statement->bindValue(':position', $Rank->position);
             $statement->bindValue(':movement', $Rank->movement);
             $statement->bindValue(':count', $Rank->count);
+            $statement->bindValue(':highest', $Rank->highest);
+            $statement->bindValue(':lowest', $Rank->lowest);
             $statement->bindValue(':image', $Rank->imagePath);
             $statement->bindValue(':id', $Rank->id);
 
