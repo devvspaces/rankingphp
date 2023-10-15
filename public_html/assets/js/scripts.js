@@ -1,49 +1,10 @@
 $("document").ready(function () {
-  function touchHandler(event) {
-    var touch = event.changedTouches[0];
-
-    var simulatedEvent = document.createEvent("MouseEvent");
-    simulatedEvent.initMouseEvent(
-      {
-        touchstart: "mousedown",
-        touchmove: "mousemove",
-        touchend: "mouseup",
-      }[event.type],
-      true,
-      true,
-      window,
-      1,
-      touch.screenX,
-      touch.screenY,
-      touch.clientX,
-      touch.clientY,
-      false,
-      false,
-      false,
-      false,
-      0,
-      null
-    );
-
-    touch.target.dispatchEvent(simulatedEvent);
-    event.preventDefault();
-  }
-
-  function init() {
-    let board = document.getElementById("board");
-    board.addEventListener("touchstart", touchHandler, true);
-    board.addEventListener("touchmove", touchHandler, true);
-    board.addEventListener("touchend", touchHandler, true);
-    board.addEventListener("touchcancel", touchHandler, true);
-  }
+  let board = document.getElementById("board");
 
   function editBoard() {
-    let board = document.getElementById("board");
     elClone = board.cloneNode(true);
     board.parentNode.replaceChild(elClone, board);
   }
-
-  init();
 
   $("#toggleEdit").click(function (event) {
     if ($(this).hasClass("btn-outline-primary")) {
@@ -104,10 +65,6 @@ $("document").ready(function () {
     }
   }
 
-  $(".rank-card").draggable({
-    revert: true,
-  });
-
   function moveCard(newRankCard, newParent) {
     let oldParent = newRankCard.parentElement;
 
@@ -124,7 +81,7 @@ $("document").ready(function () {
         // Get the element to move
         let el = document.querySelector(".rank-parent[num='" + counter + "']");
 
-        let rnkCard = el.firstElementChild;
+        let rnkCard = el.querySelector(".rank-card");
         el.removeChild(rnkCard);
 
         // Move down
@@ -146,7 +103,7 @@ $("document").ready(function () {
         // Get the element to move
         let el = document.querySelector(".rank-parent[num='" + counter + "']");
 
-        let rnkCard = el.firstElementChild;
+        let rnkCard = el.querySelector(".rank-card");
         el.removeChild(rnkCard);
 
         // Move up
@@ -168,13 +125,38 @@ $("document").ready(function () {
     setCrowns();
   }
 
-  $(".rank-parent").droppable({
-    accept: ".rank-card",
-    drop: function (event, ui) {
-      let newRankCard = ui.draggable[0];
-      let newParent = this;
-      moveCard(newRankCard, newParent);
-    },
+  // On long press of rank card set class to selected
+  let rankCards = Array.from(document.getElementsByClassName("rank-card"));
+  let selectedRankCard = null;
+
+  function stopSelectionMode() {
+    board.classList.remove("active");
+    selectedRankCard.parentElement.classList.remove("selected");
+    selectedRankCard = null;
+  }
+
+  rankCards.forEach((el, idx) => {
+    el.addEventListener("long-press", function (e) {
+      if (!selectedRankCard) {
+        el.parentElement.classList.add("selected");
+        selectedRankCard = el;
+        board.classList.add("active");
+      }
+    });
+
+    let move = el.parentElement.querySelector(".move");
+
+    move.addEventListener("click", function (e) {
+      if (selectedRankCard) {
+        if (el == selectedRankCard) {
+          stopSelectionMode();
+        } else {
+          selectedRankCard.parentElement.classList.remove("selected");
+          moveCard(selectedRankCard, el.parentElement);
+          stopSelectionMode();
+        }
+      }
+    });
   });
 
   if ($("#updateOrder").length) {
@@ -206,12 +188,12 @@ $("document").ready(function () {
         let id = rankCard.getAttribute("rankID");
 
         let rankObj = {
-          position: position,
-          count: count,
+          position: parseInt(position),
+          count: parseInt(count) || 0,
           movement: movement,
           id: id,
-          highest: highest,
-          lowest: lowest,
+          highest: parseInt(highest) || 0,
+          lowest: parseInt(lowest) || 0,
         };
 
         objArr.push(rankObj);

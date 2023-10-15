@@ -40,18 +40,12 @@
                 $errors[] = 'Please provide a name';
             }
 
-            // if (!$this->detail){
-            //     $errors[] = 'Please provide a detail';
-            // }
-
             // Create images dir if not created
             if (!is_dir(__DIR__ . '/../public_html/images')){
                 mkdir(__DIR__ . '/../public_html/images');
             }
 
             if (empty($errors)){
-
-                
                 if ($this->imageFile && $this->imageFile['tmp_name']){
                     // If the product already has an image
                     if ($this->imagePath){
@@ -66,10 +60,6 @@
 
                     move_uploaded_file($this->imageFile['tmp_name'], $relpath);
                 }
-
-                // UtilHelper::dump($this);
-
-                // exit;
                 
                 $db = Database::$db;
 
